@@ -7,12 +7,17 @@ let inputArray = [];
 
 getLocalStorage();
 
-inputList.addEventListener('click',deleteFunction )
-inputList.addEventListener('click', editFunction)
+
 
 addBtn.addEventListener('click', function () {
     input = taskInput.value;
-    inputArray.push(input)
+
+    let currentTime = Date.now();
+    let inputObject = {
+        id: currentTime,
+        data: input
+    }
+    inputArray.push(inputObject)
     setLocalStorage();
     getLocalStorage();
 
@@ -30,12 +35,12 @@ function getLocalStorage() {
 
 function buildUI() {
     inputList.innerHTML = '';
-    inputArray.forEach(function (value) {
+    inputArray.forEach(function (inputObject) {
 
         li = document.createElement('li')
-        let span=document.createElement('span')
+        let span = document.createElement('span')
         li.appendChild(span)
-        span.innerHTML = value;
+        span.innerHTML = inputObject.data;
         taskInput.value = "";
         inputList.appendChild(li);
         taskInput.focus();
@@ -44,31 +49,55 @@ function buildUI() {
         deleteBtn = document.createElement('i')
         deleteBtn.classList.add('fa-solid', 'fa-trash')
         li.appendChild(deleteBtn)
-       
+
+        deleteBtn.addEventListener('click',function(){
+            let id=inputObject.id
+            deleteFunction(id);
+        })
+
         // edit button
-        editBtn=document.createElement('i')
-        editBtn.classList.add('fa-solid','fa-pen')
+        editBtn = document.createElement('i')
+        editBtn.classList.add('fa-solid', 'fa-pen')
         li.appendChild(editBtn)
 
-        
+        editBtn.addEventListener('click',function(){
+            let id=inputObject.id;
+            editFunction(id)
+        })
+
+
     })
 }
 
-function deleteFunction(event) {
-    if (event.target.classList[1] === 'fa-trash') {
-        let item = event.target.parentElement;
-        item.remove();
-    }
+function deleteFunction(id) {
+    console.log(id);
+    console.log(inputArray);
+    inputArray=inputArray.filter((obj)=>obj.id != id)
+    console.log(inputArray);
+    setLocalStorage();
+    getLocalStorage();
 }
 
-function editFunction(event){
-    let item=event.target.parentElement
-    if(event.target.classList[1]=== 'fa-pen'){
-        let edited=prompt("text to enter")
-        let span=item.querySelector('span')
-        span.innerText=edited
+function editFunction(id){
+    let edited=prompt("enter text");
+inputArray.forEach((obj)=>{
+    if(obj.id === id){
+        obj.data = edited
     }
+    setLocalStorage();
+    getLocalStorage();
+})
+
 }
+
+// function editFunction(event) {
+//     let item = event.target.parentElement
+//     if (event.target.classList[1] === 'fa-pen') {
+//         let edited = prompt("text to enter")
+//         let span = item.querySelector('span')
+//         span.innerText = edited
+//     }
+// }
 
 
 
